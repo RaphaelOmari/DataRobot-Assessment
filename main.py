@@ -2,6 +2,7 @@ import json
 import urllib.parse
 import urllib.request
 
+#Loads JSON File
 def load_json_from_url(url):
     try:
         with urllib.request.urlopen(url) as response:
@@ -11,6 +12,7 @@ def load_json_from_url(url):
         print("Error loading JSON from URL:", e)
         return None
 
+#Exports URL info to JSON file
 def save_json_to_file(data, filename):
     try:
         with open(filename, 'w') as file:
@@ -66,41 +68,38 @@ def extract_vulnerability_details(data):
             })
     return results
 
-def main(keyword):
-    url = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+def main(keyword, page_number=1, results_per_page=10):
+    url = "https://services.nvd.nist.gov/rest/json/cves/2.0" #Base URL
     filename = "data.json"
     keyword_encoded = urllib.parse.quote(keyword)  # Properly encoding the keyword for URL usage
     
-    json_data = load_json_from_url(url)
+    startIndex = (page_number - 1) * results_per_page 
+    
+    #Loading the infomation from specified url to JSON
+    json_data = load_json_from_url(f"{url}?keywordSearch={keyword_encoded}&startIndex={startIndex}&resultsPerPage={results_per_page}")
     if json_data:
-        ResultsPerPage = json_data.get("resultsPerPage", 0)
-        StartIndex = json_data.get("startIndex", 0)
+        save_json_to_file(json_data, filename)
         
-        new_url = f"{url}?keywordSearch={keyword_encoded}&startIndex={StartIndex}&resultsPerPage={ResultsPerPage}"
-        print("URL used for query:", new_url)
-        
-        json_data = load_json_from_url(new_url)
-        if json_data:
-            save_json_to_file(json_data, filename)
-            
-            vulnerability_details = extract_vulnerability_details(json_data)
-            for detail in vulnerability_details:
-                #print(detail)
+        vulnerability_details = extract_vulnerability_details(json_data)
 
-                print("Source of Info:", detail["sourceIdentifier"])
-                print("CVE ID:", detail["id"])
-                print("Date info published:", detail["published"])
-                print("Last known data entry:2", detail["lastModified"])
-                print("Vulnerability Status:", detail["vulnStatus"])
-                print("Security Details:", detail["description"]["value"])
-                print("URL References: ", ', '.join(detail["urls"]) if detail["urls"] else "No URLs available")
-                print("Access Vector: ", detail["accessVectors"][0] if detail["accessVectors"] else "No Access Vector available")
-                print("Impact Score: ", detail["impactScores"][0] if detail["impactScores"] else "No Impact Score available")
-                print("Base Score: ", detail["baseScores"][0] if detail["baseScores"] else "No Base Score available")
-                print("Exploitability Score: ", detail["exploitabilityScores"][0] if detail["exploitabilityScores"] else "No Exploitability Score available")
-                print("")
-                print("")
+        #Displaying the details of the Cyber Security Infomrmation
+        for detail in vulnerability_details:
+            print("Source of Info:", detail["sourceIdentifier"])
+            print("CVE ID:", detail["id"])
+            print("Date info published:", detail["published"])
+            print("Last known data entry:", detail["lastModified"])
+            print("Vulnerability Status:", detail["vulnStatus"])
+            print("Security Details:", detail["description"]["value"])
+            print("URL References:", ', '.join(detail["urls"]) if detail["urls"] else "No URLs available")
+            print("Access Vector:", detail["accessVectors"][0] if detail["accessVectors"] else "No Access Vector available")
+            print("Impact Score:", detail["impactScores"][0] if detail["impactScores"] else "No Impact Score available")
+            print("Base Score:", detail["baseScores"][0] if detail["baseScores"] else "No Base Score available")
+            print("Exploitability Score:", detail["exploitabilityScores"][0] if detail["exploitabilityScores"] else "No Exploitability Score available")
+            print("")
+            print("")
+            print("")
 
 if __name__ == "__main__":
-    key = input("Please enter keyword: ")
-    main(key)
+    keyword = input("Please enter keyword: ")
+    page_number = int(input("Enter page number: "))
+    main(keyword, page_number)
