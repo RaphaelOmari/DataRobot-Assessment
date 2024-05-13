@@ -20,4 +20,4 @@ When prompted, enter a keyword to search for specific CVE details.
 - `load_json_from_url(url)`: Loads JSON data from a specified API URL.
 - `save_json_to_file(data, filename)`: Saves JSON data to a specified file "Data.JSON".
 - `extract_vulnerability_details(data)`: Extracts and returns vulnerability details from JSON data.
-- `main(keyword)`: Main function that orchestrates the loading, saving, and extraction of CVE details.
+- `main(keyword, page_number)`: Main function that orchestrates the loading, saving, and extraction of CVE details.
