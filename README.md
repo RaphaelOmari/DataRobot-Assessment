@@ -1,4 +1,4 @@
-# DataRobot-Assessment
+# ThreatInformation API
 ## Description
 This Python script is designed to fetch JSON data from URLs, extract details about cybersecurity vulnerabilities , and save these details to a file. This scipt is specifically tailored to interact with the CVE API that provides CVE information, and includes functionality for encoding search keywords for URLs, handling JSON data, and extracting comprehensive vulnerability details from the JSON structure.
 
